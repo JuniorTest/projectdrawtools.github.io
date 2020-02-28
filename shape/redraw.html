@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Draw Tools</title>
+
+    <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 480px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 m-0">
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="col-md-6">
+
+                <div class="card m-0" style="width: 300px; float: left;">
+                    <div class="card-header">Add New Point</div>
+                    <div class="card-body">
+                        Name: <input type="text" id="name"> <br>
+                        X: <input type="text" id="x"> <br>
+                        Y: <input type="text" id="y"> <br>
+                        Z: <input type="text" id="z"> <br>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" onclick="AddPoint()">Add New Point</button>
+                    </div>
+                </div>
+
+                <div class="card" style="width: 300px; float: left;">
+                    <div class="card-header">Add New Line</div>
+                    <div class="card-body">
+                        <input type="radio" name="mode" id="dashed">
+                        <label for="dashed">Dashed Line</label><br>
+
+                        <input type="radio" name="mode" id="solid">
+                        <label for="solid">Solid Line</label><br>
+
+                        Line Name: <input type="text" id="lineName"> <br>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" onclick="AddLine()">Add New Line</button>
+                    </div>
+                </div>
+
+                <div style="clear: both;"></div>
+
+                <div class="card" style="width: 300px; float: left;">
+                    <div class="card-header">Add New Face</div>
+                    <div class="card-body">
+                        Face Name: <input type="text" id="faceName"> <br>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" onclick="AddFace()">Add New Face</button>
+                    </div>
+                </div>
+
+                <div class="card" style="width: 300px; float: left;">
+                    <div class="card-header">Helper</div>
+                    <div class="card-body">
+                        <button class="btn btn-secondary" onclick="AddAxes()">Add Axes</button>
+                        <button class="btn btn-success" onclick="RemoveAxes()">Remove Axes</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="point-tab" data-toggle="tab" href="#points" role="tab"
+                    aria-controls="points" aria-selected="true" onclick="loadListPoint()">Points</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="line-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines"
+                    aria-selected="false" onclick="loadListLine()">Lines</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="face-tab" data-toggle="tab" href="#faces" role="tab" aria-controls="faces"
+                    aria-selected="false" onclick="loadListFace()">Faces</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="points" role="tabpanel" aria-labelledby="point-tab">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="listPoint">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="line-tab">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="listLine">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="faces" role="tabpanel" aria-labelledby="face-tab">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="listFace">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../libs/bootstrap/js/jquery-3.4.1.min.js"></script>
+    <script src="../libs/bootstrap/js/bootstrap.js"></script>
+
+    <script src="../libs/three.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
+
+    <script src="../js/draw.module.js"></script>
+
+    <script>
+
+        var canvas = document.getElementById("canvas");
+
+        var font = '../resource/fonts/gentilis_regular.typeface.json';
+        var texture = '../resource/disc.png';
+
+        var draw = new DrawTools(canvas);
+
+        draw.init({
+            objCamera: {
+                position: { x: 10, y: 10, z: 10 },
+                fov: 45,
+                aspect: 2,
+                near: 0.1,
+                far: 100
+            },
+            color: 0xffffff,
+            intensity: 2,
+            orbitPos: { x: 0, y: 0, z: 0 }
+        });
+
+        function AddPoint() {
+            var name = document.getElementById("name").value;
+            var x = document.getElementById("x").value;
+            var y = document.getElementById("y").value;
+            var z = document.getElementById("z").value;
+
+            draw.drawPoint(name, font, texture, x, y, z);
+        }
+
+        function AddLine() {
+            var line = document.getElementById("lineName").value;
+            var dashed = document.getElementById("dashed").checked;
+            var solid = document.getElementById("solid").checked;
+
+            if (dashed) {
+                draw.drawLine(line, 0);
+            } else if (solid) {
+                draw.drawLine(line, 1);
+            } else {
+                draw.drawLine(line);
+            }
+        }
+
+        function AddFace() {
+            var face = document.getElementById("faceName").value;
+            draw.drawFace(face);
+        }
+
+        function AddAxes() {
+            draw.addAxes(5);
+        }
+
+        function RemoveAxes() {
+            draw.removeAxes();
+        }
+
+        function deletePoint(name, code) {
+            draw.delete(name, 0, code)
+        }
+
+        function loadListPoint() {
+            $("#listPoint").empty();
+            var listPoint = draw.getPointList();
+            var htmlPoint = "";
+
+            listPoint.forEach(function (point) {
+                htmlPoint += '<tr>'
+                    + '<td>' + point.pointName + '('
+                    + point.coordinates.x + ','
+                    + point.coordinates.y + ','
+                    + point.coordinates.z + ')</td>'
+                    + '<td><button id="delete" class="btn btn-danger" onclick="deletePoint(' + "'" + point.pointName + "'" +', '+ Number(point.code) +')">Delete</button></td>'
+                    + '</tr>';
+            });
+
+            $("#listPoint").html(htmlPoint);
+        }
+
+        function deleteLine(name) {
+            draw.delete(name, 1);
+        }
+
+        function loadListLine() {
+            var listLine = draw.getLineList();
+            var htmlLine = "";
+
+            listLine.forEach(function (line) {
+                htmlLine += '<tr>'
+                    + '<td>' + line.name + '</td>'
+                    + '<td><button id="delete" class="btn btn-danger" onclick="deleteLine(' + "'" + line.name + "'" +')">Delete</button></td>'
+                    + '</tr>';
+            });
+
+            $("#listLine").html(htmlLine);
+        }
+
+        function deleteFace(name) {
+            draw.delete(name, 2);
+        }
+
+        function loadListFace() {
+            var listFace = draw.getFaceList();
+            var htmlFace = "";
+
+            listFace.forEach(function (face) {
+                htmlFace += '<tr>'
+                    + '<td>' + face.faceName + '</td>'
+                    + '<td><button id="delete" class="btn btn-danger" onclick="deleteFace(' + "'" + face.faceName + "'" +')">Delete</button></td>'
+                    + '</tr>';
+            });
+
+            $("#listFace").html(htmlFace);
+        }
+
+    </script>
+
+</body>
+
+</html>
